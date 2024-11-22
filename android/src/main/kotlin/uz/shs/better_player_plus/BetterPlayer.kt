@@ -114,6 +114,7 @@ internal class BetterPlayer(
         exoPlayer = ExoPlayer.Builder(context)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
+            .setRenderersFactory(DefaultRenderersFactory(this).setEnableDecoderFallback(true))
             .build()
         workManager = WorkManager.getInstance(context)
         workerObserverMap = HashMap()
