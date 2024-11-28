@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:better_player_plus/src/core/better_player_utils.dart';
+import 'package:better_player_plus/src/dash/better_player_dash_utils.dart';
 import 'package:better_player_plus/src/hls/better_player_hls_utils.dart';
 
 import 'better_player_asms_data_holder.dart';
@@ -28,7 +29,9 @@ class BetterPlayerAsmsUtils {
     String data,
     String masterPlaylistUrl,
   ) async {
-    return BetterPlayerHlsUtils.parse(data, masterPlaylistUrl);
+    return isDataSourceDash(masterPlaylistUrl)
+        ? BetterPlayerDashUtils.parse(data, masterPlaylistUrl)
+        : BetterPlayerHlsUtils.parse(data, masterPlaylistUrl);
   }
 
   ///Request data from given uri along with headers. May return null if resource
