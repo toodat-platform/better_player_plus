@@ -31,7 +31,6 @@ import android.util.Log
 import android.view.Surface
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
-import androidx.media3.extractor.DefaultExtractorsFactory
 import io.flutter.plugin.common.EventChannel.EventSink
 import androidx.work.Data
 import androidx.media3.*
@@ -439,14 +438,13 @@ internal class BetterPlayer(
                     }
                 }.createMediaSource(mediaItem)
 
-            C.CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(
-                mediaDataSourceFactory,
-                DefaultExtractorsFactory()
-            ).apply {
+            C.CONTENT_TYPE_OTHER -> ProgressiveMediaSource.Factory(mediaDataSourceFactory)
+            .apply {
                 if (drmSessionManagerProvider != null) {
                     setDrmSessionManagerProvider(drmSessionManagerProvider!!)
                 }
-            }.createMediaSource(mediaItem)
+            }
+            .createMediaSource(mediaItem)
 
             else -> {
                 throw IllegalStateException("Unsupported type: $type")
