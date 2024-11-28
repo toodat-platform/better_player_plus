@@ -67,7 +67,7 @@ import androidx.media3.exoplayer.source.ClippingMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.exoplayer.DefaultRenderersFactory
+import com.google.android.exoplayer2.DefaultRenderersFactory
 import java.io.File
 import java.lang.Exception
 import java.lang.IllegalStateException
