@@ -74,7 +74,6 @@ import java.lang.IllegalStateException
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
-import androidx.media3.exoplayer.RenderersFactory
 
 internal class BetterPlayer(
     context: Context,
