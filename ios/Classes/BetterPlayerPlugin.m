@@ -307,6 +307,7 @@ bool _remoteCommandsInitialized = false;
             NSString* certificateUrl = dataSource[@"certificateUrl"];
             NSString* licenseUrl = dataSource[@"licenseUrl"];
             NSDictionary* headers = dataSource[@"headers"];
+            NSDictionary* drmHeaders = dataSource[@"drmHeaders"];
             NSString* cacheKey = dataSource[@"cacheKey"];
             NSNumber* maxCacheSize = dataSource[@"maxCacheSize"];
             NSString* videoExtension = dataSource[@"videoExtension"];
@@ -337,7 +338,21 @@ bool _remoteCommandsInitialized = false;
                 } else {
                     assetPath = [_registrar lookupKeyForAsset:assetArg];
                 }
-                [player setDataSourceAsset:assetPath withKey:key withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl cacheKey:cacheKey cacheManager:_cacheManager overriddenDuration:overriddenDuration];
+
+                if (drmHeaders != [NSNull null] || drmHeaders != NULL) {
+                    [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key 
+                                    withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl 
+                                    withHeaders:headers withDrmHeaders:drmHeaders 
+                                    withCache: useCache cacheKey:cacheKey cacheManager:_cacheManager 
+                                    overriddenDuration:overriddenDuration 
+                                    videoExtension: videoExtension];
+                } else {
+                    [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key 
+                                withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl 
+                                withHeaders:headers withCache: useCache cacheKey:cacheKey 
+                                cacheManager:_cacheManager overriddenDuration:overriddenDuration 
+                                videoExtension: videoExtension];
+                }
             } else if (uriArg) {
                 [player setDataSourceURL:[NSURL URLWithString:uriArg] withKey:key withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl withHeaders:headers withCache: useCache cacheKey:cacheKey cacheManager:_cacheManager overriddenDuration:overriddenDuration videoExtension: videoExtension];
             } else {
