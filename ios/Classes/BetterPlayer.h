@@ -9,7 +9,6 @@
 #import <GLKit/GLKit.h>
 #import "BetterPlayerTimeUtils.h"
 #import "BetterPlayerView.h"
-#import "BetterPlayerEzDrmAssetsLoaderDelegate.h"
 #import "BetterPlayerPallyconDrmAssetsLoaderDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BetterPlayer : NSObject <FlutterPlatformView, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
 @property(readonly, nonatomic) AVPlayer* player;
 @property(readonly, nonatomic) BetterPlayerPallyconDrmAssetsLoaderDelegate* pallyconLoaderDelegate;
-@property(readonly, nonatomic) BetterPlayerEzDrmAssetsLoaderDelegate* loaderDelegate;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
