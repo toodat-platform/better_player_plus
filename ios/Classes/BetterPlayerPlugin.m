@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "BetterPlayerPlugin.h"
-#import <better_player_plus/better_player_plus-Swift.h>
+#import <better_player/better_player-Swift.h>
 
 #if !__has_feature(objc_arc)
 #error Code Requires ARC.
@@ -337,7 +337,7 @@ bool _remoteCommandsInitialized = false;
                     assetPath = [_registrar lookupKeyForAsset:assetArg fromPackage:package];
                 } else {
                     assetPath = [_registrar lookupKeyForAsset:assetArg];
-                }                
+                }
                 [player setDataSourceAsset:assetPath withKey:key withCertificateUrl:certificateUrl withLicenseUrl: licenseUrl cacheKey:cacheKey cacheManager:_cacheManager overriddenDuration:overriddenDuration];
             } else if (uriArg) {
                 if (drmHeaders != [NSNull null] || drmHeaders != NULL) {
