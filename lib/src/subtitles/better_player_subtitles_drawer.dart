@@ -56,18 +56,13 @@ class _BetterPlayerSubtitlesDrawerState
     widget.betterPlayerController.videoPlayerController!
         .addListener(_updateState);
 
-    _outerTextStyle = TextStyle(
-        fontSize: _configuration!.fontSize,
-        fontFamily: _configuration!.fontFamily,
+    _outerTextStyle = _configuration!.textStyle.copyWith(
         foreground: Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = _configuration!.outlineSize
           ..color = _configuration!.outlineColor);
 
-    _innerTextStyle = TextStyle(
-        fontFamily: _configuration!.fontFamily,
-        color: _configuration!.fontColor,
-        fontSize: _configuration!.fontSize);
+    _innerTextStyle = _configuration!.textStyle;
 
     super.initState();
   }
@@ -144,7 +139,11 @@ class _BetterPlayerSubtitlesDrawerState
 
   Widget _getTextWithStroke(String subtitleText) {
     return Container(
-      color: _configuration!.backgroundColor,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: _configuration?.backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Stack(
         children: [
           if (_configuration!.outlineEnabled)
@@ -165,6 +164,6 @@ class _BetterPlayerSubtitlesDrawerState
   }
 
   BetterPlayerSubtitlesConfiguration setupDefaultConfiguration() {
-    return const BetterPlayerSubtitlesConfiguration();
+    return const BetterPlayerSubtitlesConfiguration(textStyle: TextStyle());
   }
 }
