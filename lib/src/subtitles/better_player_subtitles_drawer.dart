@@ -158,7 +158,7 @@ class _BetterPlayerSubtitlesDrawerState
 
   Widget _buildHtmlWidget(String text, TextStyle textStyle) {
     return HtmlWidget(
-      text,
+      text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
       textStyle: textStyle,
     );
   }
