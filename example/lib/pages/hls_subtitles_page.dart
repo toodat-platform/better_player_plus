@@ -46,8 +46,7 @@ class _HlsSubtitlesPageState extends State<HlsSubtitlesPage> {
             aspectRatio: 16 / 9,
             fit: BoxFit.contain,
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-              fontSize: 16.0,
-            ));
+                textStyle: TextStyle(fontSize: 20)));
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, Constants.hlsPlaylistUrl,
         useAsmsSubtitles: true);

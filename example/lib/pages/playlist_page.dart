@@ -22,7 +22,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
       fit: BoxFit.cover,
       placeholderOnTop: true,
       showPlaceholderUntilPlay: true,
-      subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(fontSize: 10),
+      subtitlesConfiguration:
+          BetterPlayerSubtitlesConfiguration(textStyle: TextStyle()),
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,

@@ -18,10 +18,11 @@ class _SubtitlesPageState extends State<SubtitlesPage> {
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
       subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
-        backgroundColor: Colors.green,
-        fontColor: Colors.white,
-        outlineColor: Colors.black,
-        fontSize: 20,
+        textStyle: TextStyle(fontSize: 20, color: Colors.white),
+        rightPadding: 10,
+        leftPadding: 10,
+        bottomPadding: 20,
+        outlineEnabled: false,
       ),
     );
 
