@@ -19,10 +19,10 @@ class _SubtitlesPageState extends State<SubtitlesPage> {
       fit: BoxFit.contain,
       subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
         textStyle: TextStyle(fontSize: 20, color: Colors.white),
+        fullScreenTextStyle: TextStyle(fontSize: 40, color: Colors.red),
         rightPadding: 10,
         leftPadding: 10,
         bottomPadding: 20,
-        outlineEnabled: false,
       ),
     );
 

@@ -28,8 +28,6 @@ class _BetterPlayerSubtitlesDrawerState
   final RegExp htmlRegExp =
       // ignore: unnecessary_raw_strings
       RegExp(r"<[^>]*>", multiLine: true);
-  late TextStyle _innerTextStyle;
-  late TextStyle _outerTextStyle;
 
   VideoPlayerValue? _latestValue;
   BetterPlayerSubtitlesConfiguration? _configuration;
@@ -55,14 +53,6 @@ class _BetterPlayerSubtitlesDrawerState
 
     widget.betterPlayerController.videoPlayerController!
         .addListener(_updateState);
-
-    _outerTextStyle = _configuration!.textStyle.copyWith(
-        foreground: Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = _configuration!.outlineSize
-          ..color = _configuration!.outlineColor);
-
-    _innerTextStyle = _configuration!.textStyle;
 
     super.initState();
   }
@@ -144,19 +134,23 @@ class _BetterPlayerSubtitlesDrawerState
         color: _configuration?.backgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Stack(
-        children: [
-          if (_configuration!.outlineEnabled)
-            _buildHtmlWidget(subtitleText, _outerTextStyle)
-          else
-            const SizedBox(),
-          _buildHtmlWidget(subtitleText, _innerTextStyle)
-        ],
+      child: _buildHtmlWidget(
+        subtitleText,
+        widget.betterPlayerSubtitlesConfiguration!.textStyle,
+        widget.betterPlayerSubtitlesConfiguration!.fullScreenTextStyle,
       ),
     );
   }
 
-  Widget _buildHtmlWidget(String text, TextStyle textStyle) {
+  Widget _buildHtmlWidget(
+      String text, TextStyle textStyle, TextStyle? fullScreenTextStyle) {
+    if (widget.betterPlayerController.isFullScreen) {
+      return HtmlWidget(
+        text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
+        textStyle: fullScreenTextStyle ?? textStyle,
+      );
+    }
+
     return HtmlWidget(
       text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
       textStyle: textStyle,
