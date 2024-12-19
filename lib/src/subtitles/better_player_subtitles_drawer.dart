@@ -145,16 +145,27 @@ class _BetterPlayerSubtitlesDrawerState
   Widget _buildHtmlWidget(
       String text, TextStyle textStyle, TextStyle? fullScreenTextStyle) {
     if (widget.betterPlayerController.isFullScreen) {
-      return HtmlWidget(
+      return Text(
         text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
-        textStyle: fullScreenTextStyle ?? textStyle,
+        style: fullScreenTextStyle ?? textStyle,
+        textAlign: TextAlign.center,
       );
+      // return HtmlWidget(
+      //   text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
+      //   textStyle: fullScreenTextStyle ?? textStyle,
+      // );
     }
 
-    return HtmlWidget(
+    return Text(
       text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
-      textStyle: textStyle,
+      style: textStyle,
+      textAlign: TextAlign.center,
     );
+
+    // return HtmlWidget(
+    //   text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
+    //   textStyle: textStyle,
+    // );
   }
 
   BetterPlayerSubtitlesConfiguration setupDefaultConfiguration() {
