@@ -152,9 +152,6 @@ class BetterPlayerControlsConfiguration {
   ///Widget which can be used instead of default progress
   final Widget? loadingWidget;
 
-  ///Color of the background, when no frame is displayed.
-  final Color backgroundColor;
-
   ///Color of the bottom modal sheet used for overflow menu items.
   final Color overflowModalColor;
 
@@ -210,7 +207,6 @@ class BetterPlayerControlsConfiguration {
     this.backwardSkipTimeInMilliseconds = 10000,
     this.loadingColor = Colors.white,
     this.loadingWidget,
-    this.backgroundColor = Colors.black,
     this.overflowModalColor = Colors.white,
     this.overflowModalTextColor = Colors.black,
   });
