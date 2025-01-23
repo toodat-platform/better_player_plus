@@ -580,6 +580,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [self updatePlayingState];
 }
 
+- (void)ensureSubtitlesEnabled {
+    if (self.isInPipMode) {
+        [self enableSubtitles]; // PIP 모드일 경우 자막 활성화 유지
+    }
+}
+
+- (void)startSubtitleCheckTimer {
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                     target:self
+                                   selector:@selector(ensureSubtitlesEnabled)
+                                   userInfo:nil
+                                    repeats:YES];
+}
+
 - (void)pause {
     _isPlaying = false;
     [self updatePlayingState];
@@ -753,6 +767,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 #if TARGET_OS_IOS
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+    self.isInPipMode = NO;
     [self disablePictureInPicture];
     if (_isPlaying) {
         [_player play];
@@ -764,6 +779,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
+    self.isInPipMode = YES;
     if (_eventSink != nil) {
         _eventSink(@{@"event" : @"pipStart"});
     }
@@ -772,6 +788,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
 
     [self enableSubtitles];
+    [self startSubtitleCheckTimer];
 }
 
 - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){

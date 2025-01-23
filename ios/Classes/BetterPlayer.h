@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BetterPlayer : NSObject <FlutterPlatformView, FlutterStreamHandler, AVPictureInPictureControllerDelegate>
 @property(readonly, nonatomic) AVPlayer* player;
+@property (nonatomic, assign) BOOL isInPipMode;
 @property(readonly, nonatomic) BetterPlayerPallyconDrmAssetsLoaderDelegate* pallyconLoaderDelegate;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
