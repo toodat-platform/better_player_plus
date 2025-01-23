@@ -245,6 +245,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)setDataSourcePlayerItem:(AVPlayerItem*)item withKey:(NSString*)key{
+    if (_player.currentItem) {
+        [self removeObservers];
+    }
     _key = key;
     _stalledCount = 0;
     _isStalledCheckStarted = false;
@@ -282,6 +285,32 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
     [asset loadValuesAsynchronouslyForKeys:@[ @"tracks" ] completionHandler:assetCompletionHandler];
     [self addObservers:item];
+
+    __weak typeof(self) weakSelf = self;
+    [asset loadValuesAsynchronouslyForKeys:@[@"playable"] completionHandler:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSError *error = nil;
+            AVKeyValueStatus status = [asset statusOfValueForKey:@"playable" error:&error];
+            if (status == AVKeyValueStatusLoaded) {
+                if (item.status == AVPlayerItemStatusReadyToPlay) {
+                    if (@available(iOS 9.0, *)) {
+                        if (_pipController && _pipController.pictureInPictureActive) {
+                            // PiP 모드에서 자동으로 재생 상태 유지
+                            weakSelf.player.rate = weakSelf.playerRate;
+                        } else {
+                            [weakSelf.player play];
+                            weakSelf.player.rate = weakSelf.playerRate;
+                        }
+                    } else {
+                        [weakSelf.player play];
+                        weakSelf.player.rate = weakSelf.playerRate;
+                    }
+                }
+            } else {
+                NSLog(@"Failed to load asset status: %@", error.localizedDescription);
+            }
+        });
+    }];
 }
 
 - (void)enableSubtitles {
@@ -369,33 +398,30 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
     if ([path isEqualToString:@"rate"]) {
         if (@available(iOS 10.0, *)) {
-            if (_pipController.pictureInPictureActive == true){
-                if (_lastAvPlayerTimeControlStatus != [NSNull null] && _lastAvPlayerTimeControlStatus == _player.timeControlStatus){
+            if (_pipController.pictureInPictureActive) {
+                if (_lastAvPlayerTimeControlStatus != [NSNull null] && _lastAvPlayerTimeControlStatus == _player.timeControlStatus) {
                     return;
                 }
 
-                if (_player.timeControlStatus == AVPlayerTimeControlStatusPaused){
+                if (_player.timeControlStatus == AVPlayerTimeControlStatusPaused) {
                     _lastAvPlayerTimeControlStatus = _player.timeControlStatus;
                     if (_eventSink != nil) {
-                      _eventSink(@{@"event" : @"pause"});
+                        _eventSink(@{@"event" : @"pause"});
                     }
                     return;
-
                 }
-                if (_player.timeControlStatus == AVPlayerTimeControlStatusPlaying){
+
+                if (_player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
                     _lastAvPlayerTimeControlStatus = _player.timeControlStatus;
                     if (_eventSink != nil) {
-                      _eventSink(@{@"event" : @"play"});
+                        _eventSink(@{@"event" : @"play"});
                     }
+                }
+            } else {
+                if (_player.rate == 0 && CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >, kCMTimeZero) && CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, <, _player.currentItem.duration) && _isPlaying) {
+                    [self handleStalled];
                 }
             }
-        }
-
-        if (_player.rate == 0 && //if player rate dropped to 0
-            CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >, kCMTimeZero) && //if video was started
-            CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, <, _player.currentItem.duration) && //but not yet finished
-            _isPlaying) { //instance variable to handle overall state (changed to YES when user triggers playback)
-            [self handleStalled];
         }
     }
 
@@ -460,32 +486,31 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
     }
 }
-
 - (void)updatePlayingState {
     if (!_isInitialized || !_key) {
         return;
     }
-    if (!self._observersAdded){
+
+    if (!self._observersAdded) {
         [self addObservers:[_player currentItem]];
     }
 
+    if (@available(iOS 10.0, *)) {
+        if (_pipController && _pipController.pictureInPictureActive) {
+            // PiP 모드에서는 별도 상태 갱신을 하지 않음
+            return;
+        }
+    }
+
     if (_isPlaying) {
-        // if (@available(iOS 10.0, *)) {
-        //     [_player playImmediatelyAtRate:1.0];
-        //     _player.rate = _playerRate;
-        // } else {
-        //     [_player play];
-        //     _player.rate = _playerRate;
-        // }
         if (_player.rate == 0) {
-            if (@available(iOS 10.0, *)) {
-                [_player playImmediatelyAtRate:_playerRate];
-            } else {
-                [_player play];
-            }
+            [_player play];
+            _player.rate = _playerRate;
         }
     } else {
-        [_player pause];
+        if (_player.rate != 0) {
+            [_player pause];
+        }
     }
 }
 
@@ -543,6 +568,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     _stalledCount = 0;
     _isStalledCheckStarted = false;
     _isPlaying = true;
+
+    if (@available(iOS 10.0, *)) {
+        if (_pipController && _pipController.pictureInPictureActive) {
+            // PiP 모드에서 강제로 재생 상태 설정
+            _player.rate = _playerRate;
+            return;
+        }
+    }
+    
     [self updatePlayingState];
 }
 
@@ -720,7 +754,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 #if TARGET_OS_IOS
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
     [self disablePictureInPicture];
-    [self updatePlayingState];
+    if (_isPlaying) {
+        [_player play];
+    } else {
+        [_player pause];
+    }
 
     [self disableSubtitles];
 }
@@ -728,6 +766,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
     if (_eventSink != nil) {
         _eventSink(@{@"event" : @"pipStart"});
+    }
+    if (_player.currentItem.status == AVPlayerItemStatusReadyToPlay) {
+        [_player play];
     }
 
     [self enableSubtitles];
