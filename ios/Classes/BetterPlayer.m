@@ -284,6 +284,41 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [self addObservers:item];
 }
 
+- (void)enableSubtitles {
+    AVPlayerItem *currentItem = _player.currentItem;
+    AVMediaSelectionGroup *subtitleGroup = [currentItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+    if (subtitleGroup) {
+        // "en" 언어의 자막 옵션을 찾음
+        AVMediaSelectionOption *selectedSubtitle = nil;
+        for (AVMediaSelectionOption *option in subtitleGroup.options) {
+            NSString *localeIdentifier = [option.locale localeIdentifier];
+            if ([localeIdentifier isEqualToString:@"en"]) {
+                selectedSubtitle = option;
+                break;
+            }
+        }
+
+        // "en" 언어 자막이 있으면 활성화, 없으면 기본 옵션 선택
+        if (selectedSubtitle) {
+            [currentItem selectMediaOption:selectedSubtitle inMediaSelectionGroup:subtitleGroup];
+        } else {
+            // "en" 자막이 없으면 기본 자막 설정
+            AVMediaSelectionOption *defaultSubtitle = subtitleGroup.defaultOption;
+            if (defaultSubtitle) {
+                [currentItem selectMediaOption:defaultSubtitle inMediaSelectionGroup:subtitleGroup];
+            }
+        }
+    }
+}
+
+- (void)disableSubtitles {
+    AVPlayerItem *currentItem = _player.currentItem;
+    AVMediaSelectionGroup *subtitleGroup = [currentItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
+    if (subtitleGroup) {
+        [currentItem selectMediaOption:nil inMediaSelectionGroup:subtitleGroup];
+    }
+}
+
 -(void)handleStalled {
     if (_isStalledCheckStarted){
         return;
@@ -435,12 +470,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
 
     if (_isPlaying) {
-        if (@available(iOS 10.0, *)) {
-            [_player playImmediatelyAtRate:1.0];
-            _player.rate = _playerRate;
-        } else {
-            [_player play];
-            _player.rate = _playerRate;
+        // if (@available(iOS 10.0, *)) {
+        //     [_player playImmediatelyAtRate:1.0];
+        //     _player.rate = _playerRate;
+        // } else {
+        //     [_player play];
+        //     _player.rate = _playerRate;
+        // }
+        if (_player.rate == 0) {
+            if (@available(iOS 10.0, *)) {
+                [_player playImmediatelyAtRate:_playerRate];
+            } else {
+                [_player play];
+            }
         }
     } else {
         [_player pause];
@@ -678,12 +720,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 #if TARGET_OS_IOS
 - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
     [self disablePictureInPicture];
+    [self updatePlayingState];
+
+    [self disableSubtitles];
 }
 
 - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
     if (_eventSink != nil) {
         _eventSink(@{@"event" : @"pipStart"});
     }
+
+    [self enableSubtitles];
 }
 
 - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController  API_AVAILABLE(ios(9.0)){
