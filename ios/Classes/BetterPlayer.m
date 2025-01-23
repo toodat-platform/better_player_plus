@@ -317,26 +317,28 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     AVPlayerItem *currentItem = _player.currentItem;
     AVMediaSelectionGroup *subtitleGroup = [currentItem.asset mediaSelectionGroupForMediaCharacteristic:AVMediaCharacteristicLegible];
     if (subtitleGroup) {
-        // "en" 언어의 자막 옵션을 찾음
+        // 설정된 자막 언어 코드로 자막 옵션을 찾음
         AVMediaSelectionOption *selectedSubtitle = nil;
         for (AVMediaSelectionOption *option in subtitleGroup.options) {
             NSString *localeIdentifier = [option.locale localeIdentifier];
-            if ([localeIdentifier isEqualToString:@"en"]) {
+            if ([localeIdentifier isEqualToString:self.subtitleLanguage]) {
                 selectedSubtitle = option;
                 break;
             }
         }
 
-        // "en" 언어 자막이 있으면 활성화, 없으면 기본 옵션 선택
+        // 설정된 언어 자막이 있으면 활성화
         if (selectedSubtitle) {
             [currentItem selectMediaOption:selectedSubtitle inMediaSelectionGroup:subtitleGroup];
-        } else {
-            // "en" 자막이 없으면 기본 자막 설정
-            AVMediaSelectionOption *defaultSubtitle = subtitleGroup.defaultOption;
-            if (defaultSubtitle) {
-                [currentItem selectMediaOption:defaultSubtitle inMediaSelectionGroup:subtitleGroup];
-            }
         }
+        // 없는 경우에는 일단 비활성화 하도록 변경
+        //  else {
+        //     // 설정된 언어 자막이 없으면 기본 자막 설정
+        //     AVMediaSelectionOption *defaultSubtitle = subtitleGroup.defaultOption;
+        //     if (defaultSubtitle) {
+        //         [currentItem selectMediaOption:defaultSubtitle inMediaSelectionGroup:subtitleGroup];
+        //     }
+        // }
     }
 }
 
