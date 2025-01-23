@@ -1218,6 +1218,14 @@ class BetterPlayerController {
     return VideoPlayerController.clearCache();
   }
 
+  void setSubtitle(String language) {
+    if (videoPlayerController == null) {
+      throw StateError("The data source has not been initialized");
+    }
+
+    videoPlayerController!.setSubtitle(language);
+  }
+
   ///Build headers map that will be used to setup video player controller. Apply
   ///DRM headers if available.
   Map<String, String?> _getHeaders() {

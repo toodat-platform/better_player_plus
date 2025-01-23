@@ -489,6 +489,13 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
   }
 
+  Future<void> setSubtitle(String language) async {
+    if (!_created || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.setSubtitle(_textureId, language);
+  }
+
   Future<void> _applyVolume() async {
     if (!_created || _isDisposed) {
       return;

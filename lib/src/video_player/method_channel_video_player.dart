@@ -289,6 +289,17 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setSubtitle(int? textureId, String language) {
+    return _channel.invokeMethod<void>(
+      'setSubtitle',
+      <String, dynamic>{
+        'textureId': textureId,
+        'language': language,
+      },
+    );
+  }
+
+  @override
   Future<void> preCache(DataSource dataSource, int preCacheSize) {
     final Map<String, dynamic> dataSourceDescription = <String, dynamic>{
       'key': dataSource.key,

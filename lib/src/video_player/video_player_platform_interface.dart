@@ -167,6 +167,10 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('clearCache() has not been implemented.');
   }
 
+  Future<void> setSubtitle(int? textureId, String subtitle) {
+    throw UnimplementedError('setSubtitle() has not been implemented.');
+  }
+
   /// Returns a widget displaying the video with a given textureID.
   Widget buildView(int? textureId) {
     throw UnimplementedError('buildView() has not been implemented.');

@@ -350,6 +350,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
 }
 
+- (void)setSubtitle:(NSString *)language {
+    self.subtitleLanguage = language;
+    [self setSubtitleLanguage:language];
+}
+
 -(void)handleStalled {
     if (_isStalledCheckStarted){
         return;

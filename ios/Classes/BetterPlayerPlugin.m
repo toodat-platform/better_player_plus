@@ -471,6 +471,9 @@ bool _remoteCommandsInitialized = false;
                 }
             }
             result(nil);
+        } else if ([@"setSubtitle" isEqualToString:call.method]){
+            NSString* language = argsMap[@"language"];
+            [player setSubtitle:language];
         } else {
             result(FlutterMethodNotImplemented);
         }
