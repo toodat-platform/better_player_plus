@@ -435,9 +435,19 @@ class BetterPlayerPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private fun enablePictureInPicture(player: BetterPlayer) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             player.setupMediaSession(flutterState!!.applicationContext)
-            activity!!.enterPictureInPictureMode(PictureInPictureParams.Builder().setAspectRatio(
-                Rational(16, 9)
-            ).build())
+
+            val videoWidth = player.getVideoWidth()
+            val videoHeight = player.getVideoHeight()
+
+            val aspectRatio = if (videoWidth > 0 && videoHeight > 0) {
+                Rational(videoWidth, videoHeight)  // 동적 비율 설정
+            } else {
+                Rational(16, 9)  // 기본값 (안정성을 위해)
+            }
+
+            activity!!.enterPictureInPictureMode(PictureInPictureParams.Builder()
+            .setAspectRatio(aspectRatio)
+            .build())
             startPictureInPictureListenerTimer(player)
             player.onPictureInPictureStatusChanged(true)
         }

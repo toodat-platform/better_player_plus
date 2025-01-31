@@ -849,4 +849,23 @@ internal class BetterPlayer(
         }
     }
 
+    fun getVideoWidth(): Int {
+        return exoPlayer?.videoFormat?.let { format ->
+            if (format.rotationDegrees == 90 || format.rotationDegrees == 270) {
+                format.height // 회전된 경우 너비와 높이를 바꿔야 함
+            } else {
+                format.width
+            }
+        } ?: 0 // 비디오 정보가 없으면 기본값 0 반환
+    }
+    
+    fun getVideoHeight(): Int {
+        return exoPlayer?.videoFormat?.let { format ->
+            if (format.rotationDegrees == 90 || format.rotationDegrees == 270) {
+                format.width // 회전된 경우 너비와 높이를 바꿔야 함
+            } else {
+                format.height
+            }
+        } ?: 0 // 비디오 정보가 없으면 기본값 0 반환
+    }
 }

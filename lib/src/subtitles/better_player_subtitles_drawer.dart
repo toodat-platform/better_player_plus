@@ -102,11 +102,11 @@ class _BetterPlayerSubtitlesDrawerState
       width: double.infinity,
       child: Padding(
         padding: EdgeInsets.only(
-            bottom: _playerVisible
-                ? isPipMode
-                    ? _configuration!.bottomPadding
-                    : _configuration!.bottomPadding + 30
-                : _configuration!.bottomPadding,
+            bottom: isPipMode
+                ? 15
+                : _playerVisible
+                    ? _configuration!.bottomPadding + 30
+                    : _configuration!.bottomPadding,
             left: _configuration!.leftPadding,
             right: _configuration!.rightPadding),
         child: Column(
