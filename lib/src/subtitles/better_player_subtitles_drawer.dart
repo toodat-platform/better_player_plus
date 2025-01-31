@@ -35,6 +35,8 @@ class _BetterPlayerSubtitlesDrawerState
   ///Stream used to detect if play controls are visible or not
   late StreamSubscription _visibilityStreamSubscription;
 
+  Timer? _isPipModeUpdate;
+
   @override
   void initState() {
     _visibilityStreamSubscription =
@@ -52,15 +54,28 @@ class _BetterPlayerSubtitlesDrawerState
 
     widget.betterPlayerController.videoPlayerController!
         .addListener(_updateState);
+    _isPipModeUpdate = Timer.periodic(Duration(milliseconds: 500), (_) {
+      if (widget.betterPlayerController.videoPlayerController?.value.isPip !=
+          isPipMode) {
+        setState(() {
+          isPipMode = widget
+                  .betterPlayerController.videoPlayerController?.value.isPip ??
+              false;
+        });
+      }
+    });
 
     super.initState();
   }
+
+  bool isPipMode = false;
 
   @override
   void dispose() {
     widget.betterPlayerController.videoPlayerController!
         .removeListener(_updateState);
     _visibilityStreamSubscription.cancel();
+    _isPipModeUpdate?.cancel();
     super.dispose();
   }
 
@@ -88,7 +103,9 @@ class _BetterPlayerSubtitlesDrawerState
       child: Padding(
         padding: EdgeInsets.only(
             bottom: _playerVisible
-                ? _configuration!.bottomPadding + 30
+                ? isPipMode
+                    ? _configuration!.bottomPadding
+                    : _configuration!.bottomPadding + 30
                 : _configuration!.bottomPadding,
             left: _configuration!.leftPadding,
             right: _configuration!.rightPadding),
@@ -120,25 +137,21 @@ class _BetterPlayerSubtitlesDrawerState
       Expanded(
         child: Align(
           alignment: _configuration!.alignment,
-          child: _getTextWithStroke(subtitleText),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: _configuration?.backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _buildHtmlWidget(
+              subtitleText,
+              widget.betterPlayerSubtitlesConfiguration!.textStyle,
+              widget.betterPlayerSubtitlesConfiguration!.fullScreenTextStyle,
+            ),
+          ),
         ),
       ),
     ]);
-  }
-
-  Widget _getTextWithStroke(String subtitleText) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: _configuration?.backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: _buildHtmlWidget(
-        subtitleText,
-        widget.betterPlayerSubtitlesConfiguration!.textStyle,
-        widget.betterPlayerSubtitlesConfiguration!.fullScreenTextStyle,
-      ),
-    );
   }
 
   Widget _buildHtmlWidget(
@@ -146,7 +159,9 @@ class _BetterPlayerSubtitlesDrawerState
     if (widget.betterPlayerController.isFullScreen) {
       return Text(
         text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
-        style: fullScreenTextStyle ?? textStyle,
+        style: (fullScreenTextStyle ?? textStyle).copyWith(
+            fontSize:
+                isPipMode ? 10 : (fullScreenTextStyle ?? textStyle).fontSize),
         textAlign: TextAlign.center,
       );
       // return HtmlWidget(
@@ -157,7 +172,7 @@ class _BetterPlayerSubtitlesDrawerState
 
     return Text(
       text.replaceAllMapped(RegExp(r'(\S)(?=\S)'), (m) => '${m[1]}\u200D'),
-      style: textStyle,
+      style: textStyle.copyWith(fontSize: isPipMode ? 10 : textStyle.fontSize),
       textAlign: TextAlign.center,
     );
 
