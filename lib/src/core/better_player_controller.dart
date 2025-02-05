@@ -1218,6 +1218,13 @@ class BetterPlayerController {
     return VideoPlayerController.clearCache();
   }
 
+  void disableNotification() {
+    if (videoPlayerController == null) {
+      throw StateError("The data source has not been initialized");
+    }
+    videoPlayerController!.disableNotification();
+  }
+
   void setSubtitle(String language) {
     if (videoPlayerController == null) {
       throw StateError("The data source has not been initialized");

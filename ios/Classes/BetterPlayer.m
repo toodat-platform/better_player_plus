@@ -117,8 +117,9 @@ AVPictureInPictureController *_pipController;
     } else {
         if (_eventSink) {
             _eventSink(@{@"event" : @"completed", @"key" : _key});
-            [ self removeObservers];
-
+            [self pause];
+            [self removeObservers];
+            _isPlaying = false;
         }
     }
 }
@@ -369,7 +370,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         [self play];
     } else {
         _stalledCount++;
-        if (_stalledCount > 60){
+        if (_stalledCount > 60) {
             if (_eventSink != nil) {
                 _eventSink([FlutterError
                         errorWithCode:@"VideoError"
@@ -379,7 +380,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             return;
         }
         [self performSelector:@selector(startStalledCheck) withObject:nil afterDelay:1];
-
     }
 }
 

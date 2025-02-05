@@ -290,6 +290,17 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> disableNotification(int? textureId) {
+    if (Platform.isAndroid) {
+      return Future.value();
+    }
+    return _channel.invokeMethod<void>(
+      'disableNotification',
+      <String, dynamic>{'textureId': textureId},
+    );
+  }
+
+  @override
   Future<void> setSubtitle(int? textureId, String language) {
     if (Platform.isAndroid) {
       return Future.value();

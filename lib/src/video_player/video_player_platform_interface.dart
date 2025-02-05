@@ -167,6 +167,11 @@ abstract class VideoPlayerPlatform {
     throw UnimplementedError('clearCache() has not been implemented.');
   }
 
+  /// 알림 기능을 비활성화합니다.
+  Future<void> disableNotification(int? textureId) {
+    throw UnimplementedError('disableNotification() has not been implemented.');
+  }
+
   Future<void> setSubtitle(int? textureId, String subtitle) {
     throw UnimplementedError('setSubtitle() has not been implemented.');
   }

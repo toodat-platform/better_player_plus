@@ -490,6 +490,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     }
   }
 
+  /// 알림 기능을 비활성화합니다.
+  Future<void> disableNotification() async {
+    if (!_created || _isDisposed) {
+      return;
+    }
+    await _videoPlayerPlatform.disableNotification(_textureId);
+  }
+
   Future<void> setSubtitle(String language) async {
     if (!_created || _isDisposed) {
       return;

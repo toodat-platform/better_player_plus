@@ -474,6 +474,12 @@ bool _remoteCommandsInitialized = false;
         } else if ([@"setSubtitle" isEqualToString:call.method]){
             NSString* language = argsMap[@"language"];
             [player setSubtitle:language];
+        } else if ([@"disableNotification" isEqualToString:call.method]) {
+            if (player) {
+                [self setRemoteCommandsNotificationNotActive];
+                [self disposeNotificationData:player];
+            }
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
