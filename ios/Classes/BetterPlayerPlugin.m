@@ -293,8 +293,22 @@ bool _remoteCommandsInitialized = false;
         [self onPlayerSetup:player result:result];
     } else {
         NSDictionary* argsMap = call.arguments;
-        int64_t textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
+        int64_t textureId = 0;
+        if (argsMap[@"textureId"] != [NSNull null] && argsMap[@"textureId"] != nil) {
+            textureId = ((NSNumber*)argsMap[@"textureId"]).unsignedIntegerValue;
+        } else {
+            result([FlutterError errorWithCode:@"TEXTURE_ID_NULL" 
+                                      message:@"textureId is null or invalid" 
+                                      details:nil]);
+            return;
+        }
         BetterPlayer* player = _players[@(textureId)];
+        if (player == nil) {
+            result([FlutterError errorWithCode:@"PLAYER_NOT_FOUND"
+                                      message:@"No player found for specified textureId"
+                                      details:nil]);
+            return;
+        }
         if ([@"setDataSource" isEqualToString:call.method]) {
             [player clear];
             // This call will clear cached frame because we will return transparent frame
